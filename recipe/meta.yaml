@@ -1,5 +1,6 @@
 {% set name = "PyPDF2" %}
-{% set version = "2.10.4" %}
+{% set version = "2.10.5" %}
+{% set sha256 = "a568453329f8ad73bb001bcf70fd2fd97ec6525669c54552b2b9e99c2e469459" %}
 
 package:
   name: {{ name|lower }}
@@ -7,31 +8,48 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: f090c5fc7990cf5a6d6364ce2362834974e32136d52291babb2372e5d647d188
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
+  # noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . -vv
+  skip: true  # [py<36]
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   host:
-    - python >=2.7
+    - python
     - pip
+    - setuptools
+    - wheel
   run:
-    - python >=2.7
+    - python
+    - typing_extensions >=3.10  # [py<310]
 
 test:
+  requires:
+    - pycryptodome
+    - pip
   imports:
     - PyPDF2
+    - PyPDF2._codecs
+    - PyPDF2.generic
+  commands:
+    - pip check
 
 about:
-  home: http://py-pdf.github.io/PyPDF2/
-  license: BSD-3-Clause  # unsure about this license...to be rechecked
+  home: https://pypdf2.readthedocs.io/
+  license: BSD-3-Clause
   license_file: LICENSE
   license_family: BSD
-  summary: A utility to read and write PDFs with Python
+  summary: A pure-python PDF library capable of splitting, merging, cropping, and transforming PDF files
+  description: |
+    PyPDF2 is a free and open-source pure-python PDF library capable of splitting,
+    merging, cropping, and transforming the pages of PDF files. It can also add
+    custom data, viewing options, and passwords to PDF files. PyPDF2 can retrieve
+    text and metadata from PDFs as well.
   doc_url: https://pypdf2.readthedocs.io/
+  doc_source_url: https://github.com/py-pdf/PyPDF2/tree/main/docs
   dev_url: https://github.com/py-pdf/PyPDF2
 
 extra:
