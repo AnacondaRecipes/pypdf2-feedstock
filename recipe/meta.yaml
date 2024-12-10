@@ -1,6 +1,6 @@
 {% set name = "PyPDF2" %}
-{% set version = "2.10.5" %}
-{% set sha256 = "a568453329f8ad73bb001bcf70fd2fd97ec6525669c54552b2b9e99c2e469459" %}
+{% set version = "3.0.1" %}
+{% set sha256 = "a74408f69ba6271f71b9352ef4ed03dc53a31aa404d29b5d31f53bfecfee1440" %}
 
 package:
   name: {{ name|lower }}
@@ -11,25 +11,25 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  # noarch: python
   number: 0
   skip: true  # [py<36]
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
 requirements:
   host:
     - python
     - pip
-    - setuptools
-    - wheel
+    - flit-core >=3.2,<4
   run:
     - python
-    - typing_extensions >=3.10  # [py<310]
+    - typing_extensions >=3.10.0.0  # [py<310]
+    - dataclasses  # [py<37]
 
 test:
   requires:
-    - pycryptodome
     - pip
+    # optional
+    - pycryptodome
   imports:
     - PyPDF2
     - PyPDF2._codecs
@@ -48,8 +48,8 @@ about:
     merging, cropping, and transforming the pages of PDF files. It can also add
     custom data, viewing options, and passwords to PDF files. PyPDF2 can retrieve
     text and metadata from PDFs as well.
-  doc_url: https://pypdf2.readthedocs.io/
-  doc_source_url: https://github.com/py-pdf/PyPDF2/tree/main/docs
+  doc_url: https://pypdf2.readthedocs.io
+  # converged in pypdf, this link redirects there
   dev_url: https://github.com/py-pdf/PyPDF2
 
 extra:
