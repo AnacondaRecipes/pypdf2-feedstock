@@ -2,13 +2,28 @@
 {% set version = "3.0.1" %}
 {% set sha256 = "a74408f69ba6271f71b9352ef4ed03dc53a31aa404d29b5d31f53bfecfee1440" %}
 
+# This package is at the end of its life and converged back into
+# the project pypdf at https://github.com/py-pdf/pypdf
+# PyPDF2 3.0.1 is the last version on PyPi.
+
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  # The tests sourced here are for the tag version 3.0.0 from the
+  # project pypdf because pypdf2 converged there and there is no
+  # for version 3.0.1.
+  - url: https://github.com/py-pdf/pypdf/archive/refs/tags/3.0.0.tar.gz
+    sha256: 1f7bfaa7d8e596a445fe0c990cbc7325fefe40b079816585aeacc6d169c82c24
+    folder: gh_src
+  # These are sample files not included in the github archive (they are
+  # a submodule at this commit id 0fe84b30ed33ff3daa9293e44349b8618f135699)
+  - url: https://github.com/py-pdf/sample-files/archive/0fe84b30ed33ff3daa9293e44349b8618f135699.tar.gz
+    sha256: 4726f8dee68dfe8fe0381cb1f8686cd23815c6af2912f285dc09a38a8492869f
+    folder: gh_src/sample-files
 
 build:
   number: 0
@@ -26,16 +41,28 @@ requirements:
     - dataclasses  # [py<37]
 
 test:
-  requires:
-    - pip
-    # optional
-    - pycryptodome
   imports:
     - PyPDF2
     - PyPDF2._codecs
     - PyPDF2.generic
+  requires:
+    - pip
+    - pytest
+    # optional
+    - pycryptodome
+    - pillow
+  source_files:
+    - gh_src/tests
+    - gh_src/resources
+    - gh_src/sample-files
   commands:
     - pip check
+    - cd gh_src
+    - ls sample-files
+    # Skip tests that require external downloads (URLs)
+    # keep the slow tests, and in case they are a problem
+    # skip them with '-m "not (external or slow)"'
+    - pytest -vv tests -m "not external"
 
 about:
   home: https://pypdf2.readthedocs.io/
