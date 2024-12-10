@@ -58,7 +58,6 @@ test:
   commands:
     - pip check
     - cd gh_src
-    - ls sample-files
     # Skip tests that require external downloads (URLs)
     # keep the slow tests, and in case they are a problem
     # skip them with '-m "not (external or slow)"'
